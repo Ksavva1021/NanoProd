@@ -43,11 +43,22 @@ do_install_cmssw() {
     run_cmd scramv1 project CMSSW $CMSSW_VER
     run_cmd cd $CMSSW_VER/src
     run_cmd eval `scramv1 runtime -sh`
+    run_cmd install_cmssw_addons $CMSSW_VER
     run_cmd mkdir NanoProd
     run_cmd ln -s "$this_dir/NanoProd" NanoProd/NanoProd
     run_cmd scram b -j8
     run_cmd cd "$this_dir"
     run_cmd touch "$this_dir/soft/$CMSSW_VER/.installed"
+  fi
+}
+
+install_cmssw_addons() {
+  #install CMSSW updates not in official releases
+  #TODO: Consider to add more sophisticated version matching
+  local CMSSW_VER=$1
+  if [ "X$CMSSW_VER" = "XCMSSW_14_0_6_patch1" ]; then
+      run_cmd echo "installing addons on top of "$CMSSW_VER
+      run_cmd git cms-merge-topic -u cms-tau-pog:CMSSW_14_0_X_httNanoAddons_Powheg
   fi
 }
 
